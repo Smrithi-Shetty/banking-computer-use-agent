@@ -1,2 +1,4 @@
-# banking-computer-use-agent
-LLM-driven computer-use automation for discovering, recording, and deterministically replaying banking UI capabilities
+# Banking Computer-Use Agent
+
+LLM-driven discovery, capability recording, deterministic replay,
+and human-in-the-loop handoff for a demo banking interface.
