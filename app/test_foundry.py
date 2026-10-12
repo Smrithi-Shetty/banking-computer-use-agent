@@ -2,7 +2,7 @@ import json
 
 from app.foundry_client import get_client
 
-from config import (
+from app.config import (
     AZURE_OPENAI_DEPLOYMENT
 )
 
