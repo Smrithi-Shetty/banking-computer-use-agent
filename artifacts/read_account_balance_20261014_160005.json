@@ -1,9 +1,9 @@
 {
     "artifactVersion": "1.0",
-    "generatedAt": "2026-10-13 02:55:58.817312",
+    "generatedAt": "2026-10-14 16:00:05.655299",
     "capability": {
         "name": "ReadAccountBalance",
-        "description": "Register a new ParaBank user. After successful registration, open Accounts Overview. Extract the first available account number and account balance. Do not finish until BOTH account_number and account_balance are extracted."
+        "description": "Register a new ParaBank user. After successful registration, open Accounts Overview. Extract the first available account number, total balance, and available balance. Do not finish until account_number, total_balance, and available_balance are all extracted."
     },
     "inputs": [
         {
@@ -11,18 +11,22 @@
             "type": "string"
         }
     ],
-    "outputs": {},
+    "outputs": {
+        "account_number": "19227",
+        "total_balance": "$515.50",
+        "available_balance": "$515.50"
+    },
     "steps": [
         {
             "step": 1,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "click",
                 "target_id": "link_11",
                 "value_ref": null,
                 "extract_as": null,
-                "reason": "The goal is to register a new ParaBank user, and the Register link is visible and enabled."
+                "reason": "The goal is to register a new user. Clicking the 'Register' link navigates to the registration page where user details can be input."
             },
             "result": {
                 "status": "SUCCESS",
@@ -35,14 +39,14 @@
         },
         {
             "step": 2,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_3",
                 "value_ref": "runtime_first_name",
                 "extract_as": null,
-                "reason": "Filling the First Name field is the first required step in the registration process.",
+                "reason": "The First Name field is empty and required to complete user registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -56,14 +60,14 @@
         },
         {
             "step": 3,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_4",
                 "value_ref": "runtime_last_name",
                 "extract_as": null,
-                "reason": "The 'Last Name' field is visible, enabled, and not filled, so it should be completed as part of the registration process.",
+                "reason": "The 'Last Name' field is visible, enabled, and not filled. It needs to be completed for registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -77,14 +81,14 @@
         },
         {
             "step": 4,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_5",
                 "value_ref": "runtime_address",
                 "extract_as": null,
-                "reason": "The Address field is empty and needs to be completed as part of the registration process.",
+                "reason": "Address field is visible, enabled, and not filled yet, so it should be filled next as part of the registration process.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -98,14 +102,14 @@
         },
         {
             "step": 5,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_6",
                 "value_ref": "runtime_city",
                 "extract_as": null,
-                "reason": "The City field is visible, enabled, and not yet filled; it's required for registration.",
+                "reason": "The City field is visible, enabled, and not yet filled. It is required for registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -119,14 +123,14 @@
         },
         {
             "step": 6,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_7",
                 "value_ref": "runtime_state",
                 "extract_as": null,
-                "reason": "The 'State' field is visible, enabled, and not yet filled, so it needs to be completed as part of the registration process.",
+                "reason": "The 'State' field is visible, enabled, and not yet filled. Filling this is required to proceed with registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -140,14 +144,14 @@
         },
         {
             "step": 7,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_8",
                 "value_ref": "runtime_zip",
                 "extract_as": null,
-                "reason": "The Zip Code field is visible, enabled, and not yet filled. The registration process requires all mandatory fields to be filled.",
+                "reason": "The Zip Code field is visible, enabled, and not yet filled. It is required for registering the user.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -161,14 +165,14 @@
         },
         {
             "step": 8,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_9",
                 "value_ref": "runtime_phone",
                 "extract_as": null,
-                "reason": "The field 'Phone #' is visible, enabled, not yet filled, and needs to be completed for registration.",
+                "reason": "The Phone # field is visible, enabled, and not yet filled. Filling it is the next required step for user registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -182,14 +186,14 @@
         },
         {
             "step": 9,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_10",
                 "value_ref": "runtime_ssn",
                 "extract_as": null,
-                "reason": "The SSN field is visible, enabled, and not yet filled. It is required for the registration process.",
+                "reason": "Filling the SSN field as it is required for registration and is not filled yet.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -203,14 +207,14 @@
         },
         {
             "step": 10,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_11",
                 "value_ref": "runtime_username",
                 "extract_as": null,
-                "reason": "The Username field is visible, enabled, and not yet filled.",
+                "reason": "Filling the Username field as it is required for registration and is not yet filled.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -224,14 +228,14 @@
         },
         {
             "step": 11,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_12",
                 "value_ref": "runtime_password",
                 "extract_as": null,
-                "reason": "The Password field is required for registration and is currently not filled.",
+                "reason": "The Password field is visible, enabled, and not yet filled.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -245,14 +249,14 @@
         },
         {
             "step": 12,
-            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=E4A96C7C4147E952EB69E733420764E2",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
             "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
                 "action": "fill",
                 "target_id": "input_13",
                 "value_ref": "runtime_password",
                 "extract_as": null,
-                "reason": "The Confirm Password field is visible, enabled, and not yet filled. It must be filled to complete the registration form.",
+                "reason": "The Confirm Password field is not filled yet, and it is required for completing the registration.",
                 "resolved_value": "[REDACTED]"
             },
             "result": {
@@ -266,19 +270,20 @@
         },
         {
             "step": 13,
-            "url": "https://parabank.parasoft.com/parabank/register.htm",
-            "page_title": "ParaBank | Customer Created",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
+            "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
-                "action": "click",
-                "target_id": "input_14",
-                "value_ref": null,
+                "action": "fill",
+                "target_id": "input_0",
+                "value_ref": "runtime_username",
                 "extract_as": null,
-                "reason": "All registration fields are filled, and the 'Register' button is visible and enabled; proceeding to submit the registration form."
+                "reason": "The username field is not yet filled and is required for registration.",
+                "resolved_value": "[REDACTED]"
             },
             "result": {
                 "status": "SUCCESS",
-                "action": "click",
-                "target_id": "input_14",
+                "action": "fill",
+                "target_id": "input_0",
                 "extracted_value": null,
                 "extract_as": null,
                 "error": null
@@ -286,19 +291,20 @@
         },
         {
             "step": 14,
-            "url": "https://parabank.parasoft.com/parabank/overview.htm",
-            "page_title": "ParaBank | Accounts Overview",
+            "url": "https://parabank.parasoft.com/parabank/register.htm;jsessionid=F22743BEC4DD848118879216D9575D68",
+            "page_title": "ParaBank | Register for Free Online Account Access",
             "decision": {
-                "action": "click",
-                "target_id": "link_11",
-                "value_ref": null,
+                "action": "fill",
+                "target_id": "input_1",
+                "value_ref": "runtime_password",
                 "extract_as": null,
-                "reason": "The account was successfully created, now clicking on 'Accounts Overview' to proceed with extracting account details."
+                "reason": "The password field is visible, enabled, and not yet filled. Filling it is a required step for registration.",
+                "resolved_value": "[REDACTED]"
             },
             "result": {
                 "status": "SUCCESS",
-                "action": "click",
-                "target_id": "link_11",
+                "action": "fill",
+                "target_id": "input_1",
                 "extracted_value": null,
                 "extract_as": null,
                 "error": null
@@ -306,6 +312,26 @@
         },
         {
             "step": 15,
+            "url": "https://parabank.parasoft.com/parabank/register.htm",
+            "page_title": "ParaBank | Customer Created",
+            "decision": {
+                "action": "click",
+                "target_id": "input_14",
+                "value_ref": null,
+                "extract_as": null,
+                "reason": "All required fields are already filled. Proceeding to click the Register button to complete registration."
+            },
+            "result": {
+                "status": "SUCCESS",
+                "action": "click",
+                "target_id": "input_14",
+                "extracted_value": null,
+                "extract_as": null,
+                "error": null
+            }
+        },
+        {
+            "step": 16,
             "url": "https://parabank.parasoft.com/parabank/overview.htm",
             "page_title": "ParaBank | Accounts Overview",
             "decision": {
@@ -313,7 +339,7 @@
                 "target_id": "link_11",
                 "value_ref": null,
                 "extract_as": null,
-                "reason": "The goal is to open the Accounts Overview page, and the link with element_id 'link_11' explicitly directs to it."
+                "reason": "The user successfully logged in after registration. Clicking 'Accounts Overview' to retrieve account details as per the goal."
             },
             "result": {
                 "status": "SUCCESS",
@@ -325,17 +351,83 @@
             }
         },
         {
-            "step": 16,
+            "step": 17,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview",
             "decision": {
-                "action": "click",
-                "target_id": "link_11",
+                "action": "read",
+                "target_id": "table_value_0",
                 "value_ref": null,
-                "extract_as": null,
-                "reason": "The goal is to open Accounts Overview, and the link is visible and enabled."
+                "extract_as": "account_number",
+                "reason": "Extract the account number as it is the first required field in the Accounts Overview page."
             },
             "result": {
-                "status": "FAILURE",
-                "error": "The same action was proposed repeatedly."
+                "status": "SUCCESS",
+                "action": "read",
+                "target_id": "table_value_0",
+                "extracted_value": "19227",
+                "extract_as": "account_number",
+                "error": null
+            }
+        },
+        {
+            "step": 18,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview",
+            "decision": {
+                "action": "read",
+                "target_id": "table_value_1",
+                "value_ref": null,
+                "extract_as": "total_balance",
+                "reason": "The total balance is required, and it has not been extracted yet."
+            },
+            "result": {
+                "status": "SUCCESS",
+                "action": "read",
+                "target_id": "table_value_1",
+                "extracted_value": "$515.50",
+                "extract_as": "total_balance",
+                "error": null
+            }
+        },
+        {
+            "step": 19,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview",
+            "decision": {
+                "action": "read",
+                "target_id": "table_value_2",
+                "value_ref": null,
+                "extract_as": "available_balance",
+                "reason": "The available_balance has not been extracted yet, and the corresponding table_value is visible."
+            },
+            "result": {
+                "status": "SUCCESS",
+                "action": "read",
+                "target_id": "table_value_2",
+                "extracted_value": "$515.50",
+                "extract_as": "available_balance",
+                "error": null
+            }
+        },
+        {
+            "step": 20,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview",
+            "decision": {
+                "action": "finish",
+                "target_id": null,
+                "value_ref": null,
+                "extract_as": null,
+                "reason": "All required outputs (account_number, total_balance, available_balance) have been extracted, and the goal is complete."
+            },
+            "result": {
+                "status": "SUCCESS",
+                "action": "finish",
+                "target_id": null,
+                "extracted_value": null,
+                "extract_as": null,
+                "error": null
             }
         }
     ]

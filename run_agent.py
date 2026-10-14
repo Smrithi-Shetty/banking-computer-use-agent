@@ -52,36 +52,11 @@ def main():
             goal=goal,
         )
 
-        print("\n" + "=" * 50)
-        print("DISCOVERY RUN RESULT")
-        print("=" * 50)
-
-        summary = {
-            "status": result["status"],
-            "outputs": result["outputs"],
-        }
-
-        print(
-            json.dumps(
-                summary,
-                indent=4,
-            )
-        )
-
-        print("=" * 50 + "\n")
-
         artifact_file = save_artifact(
             goal=goal,
             history=result["history"],
             outputs=result["outputs"],
         )
-
-        print(
-            f"\nArtifact Saved: "
-            f"{artifact_file}"
-        )
-
-        # Discovery Evidence
 
         timestamp = datetime.now().strftime(
             "%Y%m%d_%H%M%S"
@@ -99,22 +74,49 @@ def main():
                 f"evidence/discovery/"
                 f"account_overview_{timestamp}.png"
             ),
-            full_page=True,
+            full_page=True
         )
 
-        print(
-            "\nDiscovery Screenshot Saved\n"
-        )
+        #
+        # FINAL SUMMARY ONLY
+        #
 
-        print(
-            "\nFINAL RESULT\n"
-        )
+        final_summary = {
+            "status": result["status"],
+            "outputs": result["outputs"]
+        }
+
+        print("\n" + "=" * 60)
+        print("DISCOVERY RUN SUMMARY")
+        print("=" * 60)
 
         print(
             json.dumps(
-                result,
-                indent=4,
+                final_summary,
+                indent=4
             )
+        )
+
+        print("=" * 60)
+
+        print(
+            f"\nArtifact Saved: "
+            f"{artifact_file}"
+        )
+
+        screenshot_file = (
+            f"evidence/discovery/"
+            f"account_overview_{timestamp}.png"
+        )
+
+        page.screenshot(
+            path=screenshot_file,
+            full_page=True
+        )
+
+        print(
+            f"\nDiscovery Screenshot Saved: "
+            f"{screenshot_file}"
         )
 
         if not HEADLESS:
