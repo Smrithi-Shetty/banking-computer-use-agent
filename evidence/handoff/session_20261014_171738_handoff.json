@@ -1,0 +1,41 @@
+{
+    "session_id": "session_20261014_171738",
+    "goal": "Register a new ParaBank user. After successful registration, open Accounts Overview. Extract the first available account number, total balance, and available balance. Do not finish until account_number, total_balance, and available_balance are all extracted.",
+    "owner": "AUTOMATION",
+    "status": "COMPLETED",
+    "current_step": 18,
+    "current_url": "https://parabank.parasoft.com/parabank/overview.htm",
+    "page_title": "ParaBank | Accounts Overview",
+    "handoff_history": [
+        {
+            "event": "HANDOFF_STARTED",
+            "timestamp": "2026-10-14T17:19:06.630624",
+            "reason": "The target is classified as risky and requires human approval.",
+            "owner": "HUMAN",
+            "status": "PAUSED",
+            "step": 14,
+            "url": "https://parabank.parasoft.com/parabank/register.htm",
+            "page_title": "ParaBank | Customer Created",
+            "screenshot": "evidence\\handoff\\session_20261014_171738_handoff_started.png"
+        },
+        {
+            "event": "AUTOMATION_RESUMED",
+            "timestamp": "2026-10-14T17:20:15.234664",
+            "owner": "AUTOMATION",
+            "status": "RESUMED",
+            "step": 14,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview",
+            "screenshot": "evidence\\handoff\\session_20261014_171738_automation_resumed.png"
+        },
+        {
+            "event": "SESSION_COMPLETED",
+            "timestamp": "2026-10-14T17:20:34.694490",
+            "owner": "AUTOMATION",
+            "status": "COMPLETED",
+            "step": 18,
+            "url": "https://parabank.parasoft.com/parabank/overview.htm",
+            "page_title": "ParaBank | Accounts Overview"
+        }
+    ]
+}

@@ -23,6 +23,10 @@ from app.safety import (
     validate_action,
 )
 
+from app.session_controller import (
+    SessionController,
+)
+
 from app.surface import (
     observe,
 )
@@ -38,6 +42,7 @@ REQUIRED_OUTPUTS = {
 def _redacted_decision(
     decision,
 ) -> dict[str, Any]:
+
     data = decision.model_dump()
 
     if data.get("value_ref"):
@@ -48,11 +53,32 @@ def _redacted_decision(
     return data
 
 
+def _history_entry(
+    step_number: int,
+    page,
+    decision,
+    result: dict[str, Any],
+) -> dict[str, Any]:
+
+    return {
+        "step": step_number,
+        "url": page.url,
+        "page_title": page.title(),
+        "decision": (
+            _redacted_decision(
+                decision
+            )
+        ),
+        "result": result,
+    }
+
+
 def run_agent_loop(
     page,
     goal: str,
 ) -> dict[str, Any]:
-    history: list[dict] = []
+
+    history: list[dict[str, Any]] = []
 
     outputs: dict[str, str] = {}
 
@@ -64,33 +90,36 @@ def run_agent_loop(
 
     final_status = "MAX_STEPS_REACHED"
 
+    session_controller = SessionController(
+        page=page,
+        goal=goal,
+    )
+
     for step_number in range(
         1,
         MAX_AGENT_STEPS + 1,
     ):
+
+        session_controller.update_step(
+            step_number
+        )
+
         elapsed = (
             time.monotonic()
             - started_at
         )
 
         if elapsed >= AGENT_TIMEOUT_SECONDS:
+
             final_status = "TIMEOUT"
-            break
 
-        observation, registry = observe(
-            page
-        )
-
-        try:
-            decision = decide_next_action(
-                goal=goal,
-                observation=observation,
-                outputs=outputs,
-            )
-
-        except Exception as error:
-            final_status = (
-                "DECISION_FAILURE"
+            failure_result = (
+                session_controller.mark_failed(
+                    error=(
+                        "Agent execution exceeded "
+                        "the configured timeout."
+                    )
+                )
             )
 
             history.append(
@@ -98,10 +127,42 @@ def run_agent_loop(
                     "step": step_number,
                     "url": page.url,
                     "page_title": page.title(),
-                    "result": {
-                        "status": "FAILURE",
-                        "error": str(error),
-                    },
+                    "result": failure_result,
+                }
+            )
+
+            break
+
+        observation, registry = observe(
+            page
+        )
+
+        try:
+
+            decision = decide_next_action(
+                goal=goal,
+                observation=observation,
+                outputs=outputs,
+            )
+
+        except Exception as error:
+
+            final_status = (
+                "DECISION_FAILURE"
+            )
+
+            failure_result = (
+                session_controller.mark_failed(
+                    error=str(error)
+                )
+            )
+
+            history.append(
+                {
+                    "step": step_number,
+                    "url": page.url,
+                    "page_title": page.title(),
+                    "result": failure_result,
                 }
             )
 
@@ -115,38 +176,72 @@ def run_agent_loop(
         )
 
         if signature == previous_signature:
+
             repeated_action_count += 1
+
         else:
+
             repeated_action_count = 0
 
         previous_signature = signature
 
+        #
+        # Repeated actions require human review
+        #
+
         if repeated_action_count >= 2:
-            final_status = (
-                "REPEATED_ACTION"
+
+            handoff_reason = (
+                "The automation proposed the "
+                "same action repeatedly and "
+                "cannot safely determine the "
+                "next step."
             )
+
+            repeated_entry = {
+                "step": step_number,
+                "url": page.url,
+                "page_title": page.title(),
+                "decision": (
+                    _redacted_decision(
+                        decision
+                    )
+                ),
+                "result": {
+                    "status": (
+                        "HUMAN_INTERVENTION_REQUIRED"
+                    ),
+                    "error": handoff_reason,
+                },
+            }
 
             history.append(
-                {
-                    "step": step_number,
-                    "url": page.url,
-                    "page_title": page.title(),
-                    "decision": (
-                        _redacted_decision(
-                            decision
-                        )
-                    ),
-                    "result": {
-                        "status": "FAILURE",
-                        "error": (
-                            "The same action was "
-                            "proposed repeatedly."
-                        ),
-                    },
-                }
+                repeated_entry
             )
 
-            break
+            print(
+                json.dumps(
+                    repeated_entry,
+                    indent=4,
+                )
+            )
+
+            session_controller.handoff_to_human(
+                reason=handoff_reason
+            )
+
+            # The human may have changed the page,
+            # so clear action repetition state.
+            previous_signature = None
+            repeated_action_count = 0
+
+            # Re-observe the same live browser
+            # on the next iteration.
+            continue
+
+        #
+        # Validate action against safety policy
+        #
 
         allowed, safety_reason = (
             validate_action(
@@ -157,28 +252,106 @@ def run_agent_loop(
         )
 
         if not allowed:
-            final_status = "SAFETY_BLOCKED"
 
-            history.append(
-                {
-                    "step": step_number,
-                    "url": page.url,
-                    "page_title": page.title(),
-                    "decision": (
-                        _redacted_decision(
-                            decision
-                        )
-                    ),
-                    "result": {
-                        "status": (
-                            "SAFETY_BLOCKED"
-                        ),
-                        "error": safety_reason,
-                    },
-                }
+            handoff_reason = (
+                safety_reason
+                or (
+                    "The requested action requires "
+                    "human review."
+                )
             )
 
-            break
+            safety_entry = {
+                "step": step_number,
+                "url": page.url,
+                "page_title": page.title(),
+                "decision": (
+                    _redacted_decision(
+                        decision
+                    )
+                ),
+                "result": {
+                    "status": (
+                        "HUMAN_INTERVENTION_REQUIRED"
+                    ),
+                    "error": handoff_reason,
+                },
+            }
+
+            history.append(
+                safety_entry
+            )
+
+            print(
+                json.dumps(
+                    safety_entry,
+                    indent=4,
+                )
+            )
+
+            session_controller.handoff_to_human(
+                reason=handoff_reason
+            )
+
+            previous_signature = None
+            repeated_action_count = 0
+
+            continue
+
+        #
+        # The model may explicitly escalate
+        #
+
+        if decision.action == "escalate":
+
+            handoff_reason = (
+                decision.reason
+                or (
+                    "The model requested human "
+                    "intervention."
+                )
+            )
+
+            escalation_entry = {
+                "step": step_number,
+                "url": page.url,
+                "page_title": page.title(),
+                "decision": (
+                    _redacted_decision(
+                        decision
+                    )
+                ),
+                "result": {
+                    "status": (
+                        "HUMAN_INTERVENTION_REQUIRED"
+                    ),
+                    "error": handoff_reason,
+                },
+            }
+
+            history.append(
+                escalation_entry
+            )
+
+            print(
+                json.dumps(
+                    escalation_entry,
+                    indent=4,
+                )
+            )
+
+            session_controller.handoff_to_human(
+                reason=handoff_reason
+            )
+
+            previous_signature = None
+            repeated_action_count = 0
+
+            continue
+
+        #
+        # Execute allowed automation action
+        #
 
         result = execute_action(
             page=page,
@@ -187,19 +360,16 @@ def run_agent_loop(
             runtime_values=RUNTIME_VALUES,
         )
 
-        history_entry = {
-            "step": step_number,
-            "url": page.url,
-            "page_title": page.title(),
-            "decision": (
-                _redacted_decision(
-                    decision
-                )
-            ),
-            "result": result.model_dump(),
-        }
+        history_entry = _history_entry(
+            step_number=step_number,
+            page=page,
+            decision=decision,
+            result=result.model_dump(),
+        )
 
-        history.append(history_entry)
+        history.append(
+            history_entry
+        )
 
         print(
             json.dumps(
@@ -208,25 +378,64 @@ def run_agent_loop(
             )
         )
 
+        #
+        # Executor can also request handoff
+        #
+
         if (
             result.status
             == "HUMAN_INTERVENTION_REQUIRED"
         ):
-            final_status = (
-                "HUMAN_INTERVENTION_REQUIRED"
+
+            handoff_reason = (
+                result.error
+                or decision.reason
+                or (
+                    "The action executor requested "
+                    "human intervention."
+                )
             )
-            break
+
+            session_controller.handoff_to_human(
+                reason=handoff_reason
+            )
+
+            previous_signature = None
+            repeated_action_count = 0
+
+            continue
+
+        #
+        # Execution failure
+        #
 
         if result.status == "FAILURE":
+
             final_status = (
                 "EXECUTION_FAILURE"
             )
+
+            session_controller.mark_failed(
+                error=(
+                    result.error
+                    or (
+                        "The action executor "
+                        "reported a failure."
+                    )
+                )
+            )
+
             break
+
+        #
+        # Capture extracted outputs
+        #
 
         if (
             result.extracted_value
             is not None
         ):
+
             output_name = (
                 result.extract_as
                 or "extracted_value"
@@ -236,7 +445,9 @@ def run_agent_loop(
                 result.extracted_value
             )
 
-            print("\nCURRENT OUTPUTS\n")
+            print(
+                "\nCURRENT OUTPUTS\n"
+            )
 
             print(
                 json.dumps(
@@ -245,33 +456,95 @@ def run_agent_loop(
                 )
             )
 
+        #
+        # Finish only after all required
+        # business outputs were extracted
+        #
+
         if decision.action == "finish":
+
             if REQUIRED_OUTPUTS.issubset(
                 outputs.keys()
             ):
+
                 final_status = "SUCCESS"
+
+                session_controller.mark_completed()
+
                 break
 
-            history.append(
-                {
-                    "step": step_number,
-                    "result": {
-                        "status": "FAILURE",
-                        "error": (
-                            "Finish was requested "
-                            "before all account "
-                            "outputs were collected."
-                        ),
-                    },
-                }
+            missing_outputs = sorted(
+                REQUIRED_OUTPUTS
+                - outputs.keys()
             )
 
+            finish_entry = {
+                "step": step_number,
+                "url": page.url,
+                "page_title": page.title(),
+                "result": {
+                    "status": "FAILURE",
+                    "error": (
+                        "Finish was requested "
+                        "before all account outputs "
+                        "were collected."
+                    ),
+                    "missing_outputs": (
+                        missing_outputs
+                    ),
+                },
+            }
+
+            history.append(
+                finish_entry
+            )
+
+            print(
+                json.dumps(
+                    finish_entry,
+                    indent=4,
+                )
+            )
+
+            # Continue because this is not a
+            # terminal failure. The model gets
+            # Current Outputs on the next step.
+            previous_signature = None
+
             continue
+
+    #
+    # If the loop reaches its maximum without
+    # success, record a failed session.
+    #
+
+    if (
+        final_status
+        == "MAX_STEPS_REACHED"
+    ):
+
+        session_controller.mark_failed(
+            error=(
+                "The agent reached the maximum "
+                "configured number of steps."
+            )
+        )
 
     return {
         "status": final_status,
         "goal": goal,
         "outputs": outputs,
         "step_count": len(history),
+        "session": {
+            "session_id": (
+                session_controller.session_id
+            ),
+            "owner": (
+                session_controller.owner.value
+            ),
+            "status": (
+                session_controller.status.value
+            ),
+        },
         "history": history,
     }

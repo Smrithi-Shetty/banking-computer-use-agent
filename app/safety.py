@@ -39,6 +39,7 @@ RISKY_TEXT = {
     "bill pay",
     "request loan",
     "send payment",
+    #"accounts overview",
 }
 
 
