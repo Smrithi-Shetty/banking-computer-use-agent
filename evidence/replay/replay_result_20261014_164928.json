@@ -1,0 +1,13 @@
+{
+    "status": "SUCCESS",
+    "code": "REPLAY_COMPLETED",
+    "message": "The capability artifact was loaded and validated successfully.",
+    "artifact": "artifacts\\read_account_balance_20261014_160005.json",
+    "replay_timestamp": "2026-10-14T16:49:28.253007",
+    "outputs": {
+        "account_number": "19227",
+        "total_balance": "$515.50",
+        "available_balance": "$515.50"
+    },
+    "evidence": "evidence\\replay\\replay_result_20261014_164928.json"
+}

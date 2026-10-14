@@ -1,0 +1,9 @@
+{
+    "status": "HARD_FAILURE",
+    "code": "AUTHENTICATION_FAILED",
+    "message": "Authentication failed. Deterministic replay cannot continue safely.",
+    "replay_timestamp": "2026-10-14T16:51:58.778478",
+    "outputs": {},
+    "artifact": "artifacts\\read_account_balance_20261014_160005.json",
+    "evidence": "evidence\\replay\\replay_result_20261014_165158.json"
+}

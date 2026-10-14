@@ -1,0 +1,13 @@
+{
+    "status": "RECOVERABLE_ERROR",
+    "code": "TRANSIENT_PAGE_TIMEOUT",
+    "message": "A transient page-load timeout occurred. The bounded retry policy was applied.",
+    "artifact": "artifacts\\read_account_balance_20261014_160005.json",
+    "replay_timestamp": "2026-10-14T16:51:37.480055",
+    "retry_count": 1,
+    "max_retries": 1,
+    "retry_exhausted": true,
+    "outputs": {},
+    "evidence": "evidence\\replay\\replay_result_20261014_165137.json"
+}
+

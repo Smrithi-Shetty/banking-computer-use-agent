@@ -1,9 +1,0 @@
-{
-    "status": "SUCCESS",
-    "artifact": "artifacts\\read_account_balance_20261014_160005.json",
-    "outputs": {
-        "account_number": "19227",
-        "total_balance": "$515.50",
-        "available_balance": "$515.50"
-    }
-}

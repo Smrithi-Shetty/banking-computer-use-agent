@@ -1,0 +1,9 @@
+{
+    "status": "BUSINESS_OUTCOME",
+    "code": "ACCOUNT_NOT_FOUND",
+    "message": "The replay completed normally, but no matching account was found.",
+    "artifact": "artifacts\\read_account_balance_20261014_160005.json",
+    "replay_timestamp": "2026-10-14T16:49:56.661680",
+    "outputs": {},
+    "evidence": "evidence\\replay\\replay_result_20261014_164956.json"
+}
